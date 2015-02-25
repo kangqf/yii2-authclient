@@ -272,7 +272,7 @@ You will need to specify:
 - API base URL - redeclare "apiBaseUrl" field
 - User attribute fetching strategy - redeclare "initUserAttributes" method
 
-For example:
+For example: 
 
 ```
 use yii\authclient\OAuth1;
