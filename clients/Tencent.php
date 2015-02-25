@@ -58,26 +58,14 @@ class Tencent extends OAuth2
      */
     public $apiBaseUrl = 'https://graph.qq.com';
 
-    public $openidUrl = 'https://graph.qq.com/oauth2.0/me';
+    public $format = 'json';
 
     /**
      * @inheritdoc
      */
     protected function initUserAttributes()
     {
-        return $this->api('user/get_user_info', 'GET');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function apiInternal($accessToken, $url, $method, array $params, array $headers)
-    {
-        $params['access_token'] = $accessToken->getToken();
-        $Openid = $this->getOpenId($accessToken, $url, $method, $params, []);      
-        $params['openid'] = $Openid['openid'];
-        $params['oauth_consumer_key'] = $this->clientId;       
-        return $this->sendRequest($method, $url, $params, $headers);
+        return $this->api('user/get_user_info.' . $this->format, 'GET');
     }
 
     /**
@@ -85,7 +73,7 @@ class Tencent extends OAuth2
      */
     protected function defaultName()
     {
-        return 'tencent';
+        return 'qq';
     }
 
     /**
@@ -93,51 +81,6 @@ class Tencent extends OAuth2
      */
     protected function defaultTitle()
     {
-        return '腾讯互联';
-    }
-
-    /**
-     * @return array openid used to get the information.
-     */
-    protected function getOpenId($accessToken, $url, $method, array $params, array $headers)
-    {
-        $openidParams = ['grant_type' => 'openid_code','access_token' =>  $params['access_token']];
-        $curlOptions = $this->mergeCurlOptions(
-            $this->defaultCurlOptions(),
-            $this->getCurlOptions(),
-            [
-                CURLOPT_HTTPHEADER => $headers,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_URL => $this->openidUrl,
-            ],
-
-            $this->composeRequestCurlOptions(strtoupper($method), $this->openidUrl, $openidParams)
-        );
-
-        $openidCurlResource = curl_init();
-        foreach ($curlOptions as $option => $value) {
-            curl_setopt($openidCurlResource, $option, $value);
-        }
-
-        $output = curl_exec($openidCurlResource);
-        $outputHeaders = curl_getinfo($openidCurlResource);
-        $errorNumber = curl_errno($openidCurlResource);
-        $errorMessage = curl_error($openidCurlResource);
-
-        curl_close($openidCurlResource);
-
-        if ($errorNumber > 0) {
-            throw new Exception('Curl error requesting "' .  $url . '": #' . $errorNumber . ' - ' . $errorMessage);
-        }
-        if ($outputHeaders['http_code'] != 200) {
-            throw new InvalidResponseException($outputHeaders, $output, 'Request failed with code: ' . $outputHeaders['http_code'] . ', message: ' . $output);
-        }
-        $temp = [];
-        preg_match('/callback\(\s+(.*?)\s+\)/i', $output,$temp);
-        $outputOpenid = Json::decode($temp[1], true);  
-        if (isset($outputOpenid['error'])) {
-            throw new Exception('Response error: ' . $outputOpenid['error']);
-        }
-        return $outputOpenid;
+        return '腾讯QQ';
     }
 }
