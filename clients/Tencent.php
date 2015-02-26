@@ -73,7 +73,7 @@ class Tencent extends OAuth2
      */
     protected function defaultName()
     {
-        return 'qq';
+        return 'tencent';
     }
 
     /**
@@ -81,6 +81,6 @@ class Tencent extends OAuth2
      */
     protected function defaultTitle()
     {
-        return '腾讯QQ';
+        return '腾讯互联';
     }
 }
