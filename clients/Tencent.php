@@ -8,6 +8,7 @@
 namespace yii\authclient\clients;
 
 use yii\authclient\OAuth2;
+use yii\base\Exception;
 use yii\helpers\Json;
 
 /**
@@ -58,14 +59,31 @@ class Tencent extends OAuth2
      */
     public $apiBaseUrl = 'https://graph.qq.com';
 
-    public $format = 'json';
 
     /**
      * @inheritdoc
      */
     protected function initUserAttributes()
     {
-        return $this->api('user/get_user_info.' . $this->format, 'GET');
+        $openid =  $this->api('oauth2.0/me', 'GET');
+        $userAttributes = $this->api("user/get_user_info", 'GET', ['oauth_consumer_key'=>$openid['client_id'], 'openid'=>$openid['openid']]);
+        $userAttributes['openid']=$openid['openid'];
+        return $userAttributes;
+    }
+	/**
+     * @inheritdoc
+     */
+    protected function processResponse($rawResponse, $contentType = self::CONTENT_TYPE_AUTO) {
+        if ($contentType == self::CONTENT_TYPE_AUTO) {
+            if (strpos($rawResponse, "callback") === 0) {
+                $lpos = strpos($rawResponse, "(");
+                $rpos = strrpos($rawResponse, ")");
+                $rawResponse = substr($rawResponse, $lpos + 1, $rpos - $lpos - 1);
+                $rawResponse = trim($rawResponse);
+                $contentType = self::CONTENT_TYPE_JSON;
+            }
+        }
+        return parent::processResponse($rawResponse, $contentType);
     }
 
     /**
