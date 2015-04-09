@@ -13,7 +13,7 @@ use Yii;
 /**
  * OAuth1 serves as a client for the OAuth 1/1.0a flow.
  *
- * In oder to acquire access token perform following sequence:
+ * In order to acquire access token perform following sequence:
  *
  * ~~~
  * use yii\authclient\OAuth1;
@@ -181,12 +181,13 @@ class OAuth1 extends BaseOAuth
             }
             case 'POST': {
                 $curlOptions[CURLOPT_POST] = true;
+                $curlOptions[CURLOPT_HTTPHEADER] = ['Content-type: application/x-www-form-urlencoded'];
                 if (!empty($params)) {
-                    $curlOptions[CURLOPT_POSTFIELDS] = $params;
+                    $curlOptions[CURLOPT_POSTFIELDS] = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
                 }
                 $authorizationHeader = $this->composeAuthorizationHeader($params);
                 if (!empty($authorizationHeader)) {
-                    $curlOptions[CURLOPT_HTTPHEADER] = ['Content-Type: application/atom+xml', $authorizationHeader];
+                    $curlOptions[CURLOPT_HTTPHEADER][] = $authorizationHeader;
                 }
                 break;
             }
