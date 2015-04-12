@@ -1,5 +1,5 @@
 {
-    "name": "yiisoft/yii2-authclient",
+    "name": "kangqf/yii2-authclient",
     "description": "External authentication via OAuth and OpenID for the Yii framework",
     "keywords": ["yii2", "OAuth", "OpenID", "auth"],
     "type": "yii2-extension",
@@ -29,5 +29,4 @@
             "dev-master": "2.0.x-dev"
         }
     }
->>>>>>> 12343d9c97850bd329dc4ba699665592674b6a39
 }
